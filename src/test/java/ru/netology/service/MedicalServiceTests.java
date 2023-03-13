@@ -1,14 +1,12 @@
-package ru.netology;
+package ru.netology.service;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import ru.netology.patient.entity.BloodPressure;
 import ru.netology.patient.entity.HealthInfo;
 import ru.netology.patient.entity.PatientInfo;
-import ru.netology.patient.repository.PatientInfoFileRepository;
 import ru.netology.patient.repository.PatientInfoRepository;
 import ru.netology.patient.service.alert.SendAlertService;
 import ru.netology.patient.service.medical.MedicalService;
@@ -32,8 +30,7 @@ public class MedicalServiceTests {
 
         medicalService.checkBloodPressure(Mockito.anyString(), new BloodPressure(120, 80));
 
-        Mockito.verify(sendAlertService,
-                Mockito.times(1));
+        Mockito.verify(sendAlertService, Mockito.times(1));
     }
 
     @Test
@@ -68,10 +65,10 @@ public class MedicalServiceTests {
         MedicalService medicalService = new MedicalServiceImpl(patientInfoRepository, sendAlertService);
         ArgumentCaptor<String> argumentCaptor = ArgumentCaptor.forClass(String.class);
 
-        medicalService.checkBloodPressure(Mockito.anyString(), new BloodPressure(120, 80));
+        medicalService.checkBloodPressure(Mockito.anyString(), new BloodPressure(140, 90));
 
-        Mockito.verify(Mockito.spy(medicalService.checkBloodPressure(Mockito.anyString(), new BloodPressure(120, 80))),
-                Mockito.times(1)).
-        Assertions.assertEquals(String.format("Warning, patient with id: %s, need help", patientInfo.getId()), argumentCaptor.getValue());
+        Mockito.verify(sendAlertService, Mockito.times(1)).send(argumentCaptor.capture());
+        Assertions.assertEquals(String.format("Warning, patient with id: %s, need help", patientInfo.getId()),
+                argumentCaptor.getValue());
     }
 }
